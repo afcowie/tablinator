@@ -1,0 +1,75 @@
+cabal-version:       >= 1.10
+name:                tablinator
+version:             0.1.1
+synopsis:            Render tabular information via Pandoc
+license:             BSD3
+license-file:        LICENCE
+author:              Andrew Cowie <andrew@operationaldynamics.com>
+maintainer:          Andrew Cowie <andrew@operationaldynamics.com>
+copyright:           © 2014-2015 Operational Dynamics Consulting Pty Ltd, and Others
+category:            Text
+tested-with:         GHC == 7.10
+
+build-type:          Simple
+
+library
+  default-language:  Haskell2010
+
+  build-depends:     base,
+                     hslua,
+                     pandoc
+
+  hs-source-dirs:    lib
+
+  exposed-modules:   Tablinator.Nothing
+
+  ghc-options:       -O2
+                     -threaded
+                     -Wall
+                     -Wwarn
+                     -fwarn-tabs
+
+  ghc-prof-options:  -prof -fprof-auto-top
+
+
+executable           tablinate
+  default-language:  Haskell2010
+
+  build-depends:     base,
+                     tablinator
+
+  hs-source-dirs:    src
+  main-is:           TablinateProgram.hs
+
+  ghc-options:       -O2
+                     -threaded
+                     -Wall
+                     -Wwarn
+                     -fwarn-tabs
+                     -funbox-strict-fields
+                     -fno-warn-missing-signatures
+                     -fno-warn-unused-binds
+                     -fno-warn-unused-do-bind
+
+  ghc-prof-options:  -prof -fprof-auto-top
+
+
+test-suite           check
+  default-language:  Haskell2010
+  type:              exitcode-stdio-1.0
+
+  build-depends:     base,
+                     bytestring,
+                     containers,
+                     transformers,
+                     mtl,
+                     HUnit,
+                     hspec,
+                     hslua,
+                     tablinator
+
+  hs-source-dirs:    src,tests
+  main-is:           TestProgram.hs
+                      
+
+-- vim: set tabstop=21 expandtab:
