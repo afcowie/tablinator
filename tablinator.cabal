@@ -36,6 +36,7 @@ executable           tablinate
   default-language:  Haskell2010
 
   build-depends:     base,
+                     hslua,
                      tablinator
 
   hs-source-dirs:    src
@@ -69,7 +70,7 @@ test-suite           check
                      tablinator
 
   hs-source-dirs:    src,tests
-  main-is:           TestProgram.hs
+  main-is:           CheckProgram.hs
                       
 
 -- vim: set tabstop=21 expandtab:
