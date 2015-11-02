@@ -22,6 +22,7 @@ library
   hs-source-dirs:    lib
 
   exposed-modules:   Tablinator.Nothing
+                     Tablinator.Table
 
   ghc-options:       -O2
                      -threaded
@@ -37,6 +38,7 @@ executable           tablinate
 
   build-depends:     base,
                      hslua,
+                     pandoc,
                      tablinator
 
   hs-source-dirs:    src
