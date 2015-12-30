@@ -1,7 +1,7 @@
 all: experiment
 
 experiment:
-	stack build tablinate
+	stack build
 
 tags:
 	codex update

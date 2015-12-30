@@ -38,6 +38,8 @@ executable           tablinate
 
   build-depends:     base,
                      hslua,
+                     bytestring,
+                     containers,
                      pandoc,
                      tablinator
 
