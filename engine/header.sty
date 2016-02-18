@@ -1,0 +1,34 @@
+% Header for use with pdflatex engine
+\usepackage[varqu,scaled=0.925]{zi4}
+
+% Get control of page numbering. Enable fancyhdr, but turn off stupid header
+% rule. Then use the lastpage mechansim to get the page count. The '*' disables
+% hyperref from creating a link to the page number.
+\usepackage{fancyhdr}
+\fancyhf{}
+\pagestyle{fancy}
+\renewcommand{\headrulewidth}{0.0pt}
+
+\usepackage{lastpage}
+\fancyfoot[R]{\thepage/\pageref*{LastPage}}
+
+%
+% Load the TeX Gyre project's "Heros" font, which is an upgrade of URW's
+% lovely "Nimbus Sans L" sans-serif font.
+%
+
+\usepackage{tgheros}
+
+%
+% Customize the section heading fonts to use this accordingly.
+%
+
+\usepackage{titlesec}
+
+\titlespacing*{\section}{0pt}{1ex}{1ex}
+\titlespacing*{\subsection}{0pt}{1ex}{1ex}
+\titlespacing*{\subsubsection}{0pt}{1ex}{1ex}
+\titleformat*{\section}{\LARGE\sffamily}
+\titleformat*{\subsection}{\Large\sffamily}
+\titleformat*{\subsubsection}{\normalsize\sffamily}
+
