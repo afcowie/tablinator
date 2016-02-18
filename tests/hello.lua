@@ -16,3 +16,16 @@ SimpleProcedure {
 	x=1,
 	y=2
 }
+
+a = {
+	one=1,
+	two=2,
+	three=3,
+    four=4
+}
+
+print(a)
+
+for key,value in pairs(a) do
+	print("key: " .. key .. ", value: " .. value)
+end 
