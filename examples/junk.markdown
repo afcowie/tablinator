@@ -18,6 +18,11 @@ This is a table:
 
   : This is the caption
 
+
+* One
+* Two
+* Three
+
 And now the code:
 
 ```haskell
