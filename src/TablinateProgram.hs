@@ -16,8 +16,8 @@ main = do
     let file = head args
     print file
 -}
-    template <- L.readFile "pdflatex.template"
-    header   <- L.readFile "header.sty"
+    template <- L.readFile "engine/pdflatex.template"
+    header   <- L.readFile "engine/header.sty"
     let options = def {
         writerVerbose = False,
         writerStandalone = True,
