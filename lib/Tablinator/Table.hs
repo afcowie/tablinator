@@ -1,6 +1,6 @@
 module Tablinator.Table
 (
-    Column,
+    Column(..),
     processObjectStream
 ) where
 
