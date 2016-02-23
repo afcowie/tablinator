@@ -16,7 +16,8 @@ data LibraryBooks
     deriving (Eq, Ord, Show)
 
 instance Column LibraryBooks where
-    heading x = T.pack $ show x
+    heading x   = T.pack $ show x
+    alignment x = AlignLeft
 
 main :: IO ()
 main = hspec suite

@@ -5,7 +5,8 @@ module Tablinator.Table
 ) where
 
 import Data.List (sort)
-import Data.Map.Strict (Map, keys, assocs)
+import Data.Map.Strict (Map)
+import qualified Data.Map.Strict as Map
 import Data.Text (Text, unpack)
 import Text.Pandoc
 
@@ -15,10 +16,11 @@ import Text.Pandoc
 -- heading for each column in the output table
 --
 class Ord a => Column a where
-    heading :: a -> Text
+    heading   :: a -> Text
+    alignment :: a -> Alignment
 
 headings :: Column k => Map k a -> [Text]
-headings m = fmap heading $ sort $ keys m
+headings m = fmap heading $ Map.keys m
 
 --
 -- | Given a stream (at present modelled as a list) of input data objects (each
@@ -35,7 +37,7 @@ processObjectStream mps = let
   mkHeader h = [Plain [Str h]]
   headers = fmap mkHeader hdings
   mkRow :: Map k Text -> [[Block]]
-  mkRow mp = (\(_,v) -> [Para [Str $ unpack v]]) <$> assocs mp
+  mkRow mp = (\(_,v) -> [Para [Str $ unpack v]]) <$> Map.assocs mp
   rows = fmap mkRow mps
     in
       [Table inline align widths headers rows]
