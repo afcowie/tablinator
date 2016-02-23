@@ -1,7 +1,8 @@
 module Tablinator.Table
 (
     Column(..),
-    processObjectStream
+    processObjectStream,
+    Alignment(..)
 ) where
 
 import Data.List (sort)
