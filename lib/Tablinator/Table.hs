@@ -27,18 +27,15 @@ headings m = fmap heading $ sort $ keys m
 --
 processObjectStream :: Column k => [Map k Text] -> [Block]
 processObjectStream mps = let
-  hdings  = unpack <$> headings (head mps)
+  hdings  = fmap unpack (headings (head mps))
   inline  = [Str "This is the caption"]
-  align   = const AlignLeft <$> hdings
-  widths  = const 0 <$> hdings
+  align   = fmap (const AlignLeft) hdings
+  widths  = fmap (const 0) hdings
   mkHeader :: String -> [Block]
   mkHeader h = [Plain [Str h]]
-  headers = mkHeader <$> hdings
+  headers = fmap mkHeader hdings
   mkRow :: Map k Text -> [[Block]]
   mkRow mp = (\(_,v) -> [Para [Str $ unpack v]]) <$> assocs mp
   rows = fmap mkRow mps
-  --row1    = [[Para [Str "Left"]], [Para [Str "Right"]]]
-  --row2    = [[Para [Str "And then"]],
-  --           [Para [Code nullAttr "printf(\"Hello World\\n\");"]]]
     in
       [Table inline align widths headers rows]
