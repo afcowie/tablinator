@@ -73,6 +73,7 @@ test-suite           check
                      HUnit,
                      hspec,
                      hslua,
+                     text,
                      tablinator
 
   hs-source-dirs:    src,tests
