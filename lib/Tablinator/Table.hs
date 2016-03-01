@@ -8,7 +8,8 @@ module Tablinator.Table
 import Data.List (sort)
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as Map
-import Data.Text (Text, unpack)
+import Data.Text (Text)
+import qualified Data.Text as T
 import Text.Pandoc
 
 --
@@ -29,16 +30,33 @@ headings m = fmap heading $ Map.keys m
 -- for subsequent emplacement in a Pandoc document.
 --
 processObjectStream :: Column k => [Map k Text] -> [Block]
-processObjectStream mps = let
-  hdings  = fmap unpack (headings (head mps))
-  inline  = [Str "This is the caption"]
-  align   = fmap (const AlignLeft) hdings
-  widths  = fmap (const 0) hdings
-  mkHeader :: String -> [Block]
-  mkHeader h = [Plain [Str h]]
-  headers = fmap mkHeader hdings
-  mkRow :: Map k Text -> [[Block]]
-  mkRow mp = (\(_,v) -> [Para [Str $ unpack v]]) <$> Map.assocs mp
-  rows = fmap mkRow mps
-    in
-      [Table inline align widths headers rows]
+processObjectStream ms =
+  let
+    headers = renderTableHeading ms
+    inline  = [Str "This is the caption"]
+
+    hdings  = fmap T.unpack (headings (head ms))
+    align   = fmap (const AlignLeft) hdings
+    widths  = fmap (const 0) hdings
+    rows    = renderTableBody ms
+  in
+    [Table inline align widths headers rows]
+
+
+renderTableHeading :: Column k => [Map k Text] -> [[Block]]
+renderTableHeading ms =
+  let
+    hdings  = fmap T.unpack (headings (head ms))
+
+    mkHeading :: String -> [Block]
+    mkHeading h = [Plain [Str h]]
+  in
+    fmap mkHeading hdings
+
+renderTableBody :: Column k => [Map k Text] -> [[[Block]]]
+renderTableBody ms =
+  let
+    mkRow :: Map k Text -> [[Block]]
+    mkRow m = (\(_,v) -> [Para [Str $ T.unpack v]]) <$> Map.assocs m
+  in
+    fmap mkRow ms
