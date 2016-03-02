@@ -26,34 +26,40 @@ headings m = fmap heading $ Map.keys m
 
 --
 -- | Given a stream (at present modelled as a list) of input data objects (each
--- represented as a Map), pivot into a list of compound pandoc Blocks, suitable
+-- represented as a Map), pivot into a compound pandoc Block, suitable
 -- for subsequent emplacement in a Pandoc document.
 --
-processObjectStream :: Column k => [Map k Text] -> [Block]
+processObjectStream :: Column k => [Map k Text] -> Block
 processObjectStream ms =
   let
-    headers = renderTableHeading ms
-    inline  = [Str "This is the caption"]
-
-    hdings  = fmap T.unpack (headings (head ms))
-    align   = fmap (const AlignLeft) hdings
-    widths  = fmap (const 0) hdings
-    rows    = renderTableBody ms
+    heading = renderTableHeading ms
+    body    = renderTableBody ms
   in
-    [Table inline align widths headers rows]
+    heading body
 
 
-renderTableHeading :: Column k => [Map k Text] -> [[Block]]
+type TableRow = [TableCell]
+
+--
+-- Return a function that expects a table body and results in a table.
+--
+renderTableHeading :: Column k => [Map k Text] -> ([TableRow] -> Block)
 renderTableHeading ms =
   let
     hdings  = fmap T.unpack (headings (head ms))
+    inline  = [Str "This is the caption"]
+
+    align   = fmap (const AlignLeft) hdings
+    widths  = fmap (const 0) hdings
 
     mkHeading :: String -> [Block]
     mkHeading h = [Plain [Str h]]
-  in
-    fmap mkHeading hdings
 
-renderTableBody :: Column k => [Map k Text] -> [[[Block]]]
+    headers = fmap mkHeading hdings
+  in
+    Table inline align widths headers -- rows left to be applied.
+
+renderTableBody :: Column k => [Map k Text] -> [TableRow]
 renderTableBody ms =
   let
     mkRow :: Map k Text -> [[Block]]

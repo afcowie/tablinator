@@ -40,7 +40,7 @@ example =
     [one,two]
 
 document :: Pandoc
-document = Pandoc nullMeta (processObjectStream example)
+document = Pandoc nullMeta [processObjectStream example]
 
 main :: IO ()
 main = putStrLn $ writeMarkdown def document
