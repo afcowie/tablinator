@@ -42,6 +42,7 @@ type TableRow = [TableCell]
 
 --
 -- Return a function that expects a table body and results in a table.
+-- Partial application here; rows left to be supplied to Table constructor.
 --
 renderTableHeading :: Column k => [Map k Text] -> ([TableRow] -> Block)
 renderTableHeading ms =
@@ -57,12 +58,18 @@ renderTableHeading ms =
 
     headers = fmap mkHeading hdings
   in
-    Table inline align widths headers -- rows left to be applied.
+    Table inline align widths headers -- rows
 
+--
+-- And at last render cells. The type of the renderColumn function makes sense
+-- when you realize that TableCell is a typealias for [Block].
+--
 renderTableBody :: Column k => [Map k Text] -> [TableRow]
 renderTableBody ms =
-  let
-    mkRow :: Map k Text -> [[Block]]
-    mkRow m = (\(_,v) -> [Para [Str $ T.unpack v]]) <$> Map.assocs m
-  in
-    fmap mkRow ms
+    fmap renderTableRow ms
+  where
+    renderTableRow :: Map k Text -> TableRow
+    renderTableRow m = fmap renderColumn (Map.toAscList m)
+
+    renderColumn :: (k,Text) -> TableCell
+    renderColumn (_,v) = [Para [Str $ T.unpack v]]
