@@ -1,6 +1,6 @@
 cabal-version:       >= 1.10
 name:                tablinator
-version:             0.2.1
+version:             0.2.2
 synopsis:            Render tabular information via Pandoc
 license:             BSD3
 license-file:        LICENCE

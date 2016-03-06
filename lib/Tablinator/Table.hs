@@ -8,7 +8,8 @@ module Tablinator.Table
 import Data.List (sort)
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as Map
-import Data.Text (Text, unpack)
+import Data.Text (Text)
+import qualified Data.Text as T
 import Text.Pandoc
 
 --
@@ -25,20 +26,50 @@ headings m = fmap heading $ Map.keys m
 
 --
 -- | Given a stream (at present modelled as a list) of input data objects (each
--- represented as a Map), pivot into a list of compound pandoc Blocks, suitable
+-- represented as a Map), pivot into a compound pandoc Block, suitable
 -- for subsequent emplacement in a Pandoc document.
 --
 processObjectStream :: Column k => [Map k Text] -> [Block]
-processObjectStream mps = let
-  hdings  = fmap unpack (headings (head mps))
-  inline  = [Str "This is the caption"]
-  align   = fmap (const AlignLeft) hdings
-  widths  = fmap (const 0) hdings
-  mkHeader :: String -> [Block]
-  mkHeader h = [Plain [Str h]]
-  headers = fmap mkHeader hdings
-  mkRow :: Map k Text -> [[Block]]
-  mkRow mp = (\(_,v) -> [Para [Str $ unpack v]]) <$> Map.assocs mp
-  rows = fmap mkRow mps
-    in
-      [Table inline align widths headers rows]
+processObjectStream ms =
+  let
+    heading = renderTableHeading ms
+    body    = renderTableBody ms
+    result  = heading body
+  in
+    [result]
+
+type TableRow = [TableCell]
+
+--
+-- Return a function that expects a table body and results in a table.
+-- Partial application here; rows left to be supplied to Table constructor.
+--
+renderTableHeading :: Column k => [Map k Text] -> ([TableRow] -> Block)
+renderTableHeading ms =
+  let
+    hdings  = fmap T.unpack (headings (head ms))
+    inline  = [Str "This is the caption"]
+
+    align   = fmap (const AlignLeft) hdings
+    widths  = fmap (const 0) hdings
+
+    mkHeading :: String -> [Block]
+    mkHeading h = [Plain [Str h]]
+
+    headers = fmap mkHeading hdings
+  in
+    Table inline align widths headers -- rows
+
+--
+-- And at last render cells. The type of the renderColumn function makes sense
+-- when you realize that TableCell is a typealias for [Block].
+--
+renderTableBody :: Column k => [Map k Text] -> [TableRow]
+renderTableBody ms =
+    fmap renderTableRow ms
+  where
+    renderTableRow :: Map k Text -> TableRow
+    renderTableRow m = fmap renderColumn (Map.toAscList m)
+
+    renderColumn :: (k,Text) -> TableCell
+    renderColumn (_,v) = [Para [Str $ T.unpack v]]
