@@ -29,14 +29,14 @@ headings m = fmap heading $ Map.keys m
 -- represented as a Map), pivot into a compound pandoc Block, suitable
 -- for subsequent emplacement in a Pandoc document.
 --
-processObjectStream :: Column k => [Map k Text] -> Block
+processObjectStream :: Column k => [Map k Text] -> [Block]
 processObjectStream ms =
   let
     heading = renderTableHeading ms
     body    = renderTableBody ms
+    result  = heading body
   in
-    heading body
-
+    [result]
 
 type TableRow = [TableCell]
 
