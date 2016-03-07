@@ -36,9 +36,6 @@ allColumns :: Column k => [k]
 allColumns = enumFrom $ toEnum 0
 
 
-headings :: Column k => Map k a -> [Text]
-headings m = fmap heading $ Map.keys m
-
 --
 -- | Given a stream (at present modelled as a list) of input data objects (each
 -- represented as a Map), pivot into a compound pandoc Block, suitable for
@@ -50,8 +47,8 @@ headings m = fmap heading $ Map.keys m
 processObjectStream :: Column k => [k] -> [Map k Text] -> Block
 processObjectStream order ms =
   let
-    heading = renderTableHeading order ms
-    body    = renderTableBody ms
+    heading = renderTableHeading order
+    body    = renderTableBody order ms
     result  = heading body
   in
     result
@@ -62,32 +59,40 @@ type TableRow = [TableCell]
 -- Return a function that expects a table body and results in a table.
 -- Partial application here; rows left to be supplied to Table constructor.
 --
-renderTableHeading :: Column k => [k] -> [Map k Text] -> ([TableRow] -> Block)
-renderTableHeading _ ms =
+renderTableHeading :: Column k => [k] -> ([TableRow] -> Block)
+renderTableHeading columns =
   let
-    hdings  = fmap T.unpack (headings (head ms))
     inline  = [Str "This is the caption"]
 
-    align   = fmap (const AlignLeft) hdings
-    widths  = fmap (const 0) hdings
+    align   = fmap alignment columns
 
-    mkHeading :: String -> [Block]
-    mkHeading h = [Plain [Str h]]
+    widths  = fmap (const 0) columns
 
-    headers = fmap mkHeading hdings
+    readerHeader :: Text -> [Block]
+    readerHeader h =
+        [Plain [Str $ T.unpack h]]
+
+    headers = fmap (readerHeader . heading) columns
   in
     Table inline align widths headers -- rows
 
 --
 -- And at last render cells. The type of the renderColumn function makes sense
--- when you realize that TableCell is a typealias for [Block].
+-- when you realize that TableCell is a typealias for [Block]. Default to empty
+-- if the field is missing from the row.
 --
-renderTableBody :: Column k => [Map k Text] -> [TableRow]
-renderTableBody ms =
-    fmap renderTableRow ms
+renderTableBody :: forall k. Column k => [k] -> [Map k Text] -> [TableRow]
+renderTableBody columns ms =
+    fmap (renderTableRow columns) ms
   where
-    renderTableRow :: Map k Text -> TableRow
-    renderTableRow m = fmap renderColumn (Map.toAscList m)
+    renderTableRow :: [k] -> Map k Text -> TableRow
+    renderTableRow columns m = fmap (renderColumn m) columns
 
-    renderColumn :: (k,Text) -> TableCell
-    renderColumn (_,v) = [Para [Str $ T.unpack v]]
+    renderColumn :: Map k Text -> k -> TableCell
+    renderColumn m column =
+      let
+        v = case Map.lookup column m of
+                Just value -> value
+                Nothing    -> T.empty
+      in
+        [Para [Str $ T.unpack v]]
