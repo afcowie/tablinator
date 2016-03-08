@@ -16,7 +16,7 @@ import qualified Data.Text as T
 import Text.Pandoc
 
 --
--- | A table column. Columns are to be unique.  You need to specify an Ord
+-- | A table column. Columns are to be unique. You need to specify an Ord
 -- instance which will determine the order of your columns, and implement the
 -- 'heading' method to give a heading for each column in the output table.
 -- 'alignment' will default to 'AlignLeft'; override at will.
@@ -27,6 +27,8 @@ class (Ord a, Enum a) => Column a where
     alignment :: a -> Alignment
     alignment _ = AlignLeft
 
+    width :: a -> Double
+    width _ = 0.0
 
 --
 -- | Render all the columns of your type. This is a convenience function which
@@ -66,7 +68,7 @@ renderTableHeading columns =
 
     align   = fmap alignment columns
 
-    widths  = fmap (const 0) columns
+    widths  = fmap width columns
 
     readerHeader :: Text -> [Block]
     readerHeader h =
