@@ -8,7 +8,6 @@ module Tablinator.Table
     Alignment(..)
 ) where
 
-import Data.List (sort)
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as Map
 import Data.Text (Text)
@@ -49,9 +48,9 @@ allColumns = enumFrom $ toEnum 0
 processObjectStream :: Column k => [k] -> [Map k Text] -> Block
 processObjectStream order ms =
   let
-    heading = renderTableHeading order
+    header  = renderTableHeading order
     body    = renderTableBody order ms
-    result  = heading body
+    result  = header body
   in
     result
 
@@ -85,10 +84,10 @@ renderTableHeading columns =
 --
 renderTableBody :: forall k. Column k => [k] -> [Map k Text] -> [TableRow]
 renderTableBody columns ms =
-    fmap (renderTableRow columns) ms
+    fmap renderTableRow ms
   where
-    renderTableRow :: [k] -> Map k Text -> TableRow
-    renderTableRow columns m = fmap (renderColumn m) columns
+    renderTableRow :: Map k Text -> TableRow
+    renderTableRow m = fmap (renderColumn m) columns
 
     renderColumn :: Map k Text -> k -> TableCell
     renderColumn m column =
