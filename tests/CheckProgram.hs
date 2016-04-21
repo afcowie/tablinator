@@ -13,7 +13,7 @@ data LibraryBooks
     | Author
     | Title
     | Description
-    deriving (Eq, Ord, Show)
+    deriving (Eq, Ord, Enum, Show)
 
 instance Column LibraryBooks where
     heading x   = T.pack $ show x
