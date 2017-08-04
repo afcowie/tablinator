@@ -1,6 +1,6 @@
 cabal-version:       >= 1.24
 name:                tablinator
-version:             0.2.3
+version:             0.3.1
 synopsis:            Render tabular information via Pandoc
 license:             BSD3
 license-file:        LICENCE
@@ -18,7 +18,6 @@ library
   build-depends:     base,
                      containers,
                      text,
-                     hslua,
                      pandoc
 
   hs-source-dirs:    lib
@@ -39,7 +38,6 @@ executable           tablinate
   buildable:         False
 
   build-depends:     base,
-                     hslua,
                      bytestring,
                      containers,
                      pandoc,
@@ -72,11 +70,10 @@ test-suite           check
                      mtl,
                      HUnit,
                      hspec,
-                     hslua,
                      text,
                      tablinator
 
-  hs-source-dirs:    src,tests
+  hs-source-dirs:    tests
   main-is:           CheckProgram.hs
                       
 
